@@ -13,10 +13,6 @@ flux.bind = function(v, store, params) {
             self.update()
         }
 
-        flux.rc.on(store.name, function() {
-            flux.update(store, params);
-        })
-
         flux.rc.on(store.name + '-updated', function() {
             self[v] = store.data;
             self.update()
@@ -34,10 +30,16 @@ flux.bind = function(v, store, params) {
 
 flux.update = function(store, params) {
     store.getted = true;
-    utils.httpGet(store.url, params, function(data) {
-        store.data = data;
+    if (store.type === 'ajax') {
+        utils.httpGet(store.url, params, function(data) {
+            store.data = data;
+            flux.rc.trigger(store.name + '-updated')
+        });
+    }
+    else if (store.type === 'json' && params) {
+        store.data = params;
         flux.rc.trigger(store.name + '-updated')
-    });
+    }
 } 
 
 fluxStore.Apps = {
