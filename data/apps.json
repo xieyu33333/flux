@@ -1,22 +1,28 @@
-[
-    {
-        "id" : 1,
-        "name": "app1"
-    },
-    {
-        "id" : 2,
-        "name": "app2"
-    },
-    {
-        "id" : 3,
-        "name": "app3"
-    },
-    {
-        "id" : 4,
-        "name": "app4"
-    },
-    {
-        "id" : 5,
-        "name": "app5"
+{
+    "outer": {
+        "wrap" : {
+            "data" : [
+                {
+                    "id" : 1,
+                    "name": "app1"
+                },
+                {
+                    "id" : 2,
+                    "name": "app2"
+                },
+                {
+                    "id" : 3,
+                    "name": "app3"
+                },
+                {
+                    "id" : 4,
+                    "name": "app4"
+                },
+                {
+                    "id" : 5,
+                    "name": "app5"
+                }
+            ]
+        }
     }
-]
+}
