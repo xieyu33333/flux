@@ -1,3 +1,4 @@
+var fluxStore = {};
 fluxStore.Apps = {
     applist: {
         type: 'ajax',

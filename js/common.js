@@ -101,6 +101,15 @@ var utils = {
     },
 
     concatParams: function(url, params) {
+        var urlArr = url.match(/:\w+/g);
+        if (urlArr && urlArr.length) {
+            for (i = 0; i < urlArr.length; i ++) {
+                url = url.replace(urlArr[i], function(v) {
+                    v = v.replace(':', '');
+                    return params[v]
+                });
+            }
+        }
         if (url.match(/\?/)) {
             var str = '&'
         }
