@@ -1,26 +1,36 @@
-var fluxStore = {};
-fluxStore.Apps = {
-    applist: {
-        type: 'ajax',
-        name: 'app-applist',
-        url: 'data/apps.json',
-        col: 'outer.wrap.data'
+var store = {};
+store.chatContent = flux.createStore({
+    get: function() {
+        var self = this;
+        utils.httpGet('data/apps.json', {}, function(data) {
+            self.data = data.outer.wrap.data;
+            self.trigger('complete');
+        });
     },
 
-    auth: {
-        type: 'ajax',
-        name: 'app-auth',
-        url: '/auth.json'
+    insertBeforeList: function(data) {
+        if (utils.isObject(data)) {
+            this.data.unshift(data);
+        }
+        else if (utils.isArray(data)) {
+            this.data = data.concat(this.data);
+        }
     },
 
-    detail: {
-        type: 'ajax',
-        name: 'app-detail',
-        url:  'data/app.json'
+    appendToList: function(data) {
+        if (utils.isObject(data)) {
+            this.data.push(data);
+        }
+        else if (utils.isArray(data)) {
+            this.data = this.data.concat(data);
+        }
     },
 
-    static: {
-        type: 'json',
-        data: [{name: '1'}, {name: '2'}, {name: '3'}]
+    deleteItem: function(id) {
+        for (i = 0; i < this.data.length; i++) {
+            if (this.data[i].id === id) {
+                this.data.splice(i, 1);
+            }
+        }
     }
-}
+});

@@ -6,9 +6,10 @@
     <ul>
         <li each="{ static }">{ name }</li>
     </ul>
-    
-    var store = fluxStore.Apps;
-    flux.bind.call(this, 'items', store.applist);
+    <script>
+    //var store = fluxStore.Apps;
+    flux.bind.call(this, store.chatContent, 'items');
 
-    flux.bind.call(this, 'static', store.static);
+    //flux.bind.call(this, 'static', store.static);
+    </script>
 </applist-1>

@@ -1,35 +1,25 @@
 ## 使用说明
-首先定义store，每一项都代表一个远程或本地静态数据资源
 
-    var store = {
-        apps: {
-            type: 'ajax',
-            name: 'apps',
-            url: 'data.json',
-            col: 'data'
+### 创建store
+get方法必须存在，用于获取数据，数据要绑定在data属性上，数据获取完成后要执行`this.trigger('complete');`, 还可以编写关于数据的其他方法。
+
+
+    var chatContent = flux.createStore({
+        get: function() {
+            var self = this;
+            utils.httpGet('data/apps.json', {}, function(data) {
+                self.data = data.outer.wrap.data;
+                self.trigger('complete');
+            });
         },
-        static: {
-            type: 'json',
-            data: [{name: '1'}, {name: '2'}, {name: '3'}]
-        }
-    }
-
-只有两个api：bind和update
-
-    <tab-a>
-        <ul>
-            <li each="{ items }">{ name }</li>
-        </ul>
-        <ul>
-            <li each="{ static }">{ name }</li>
-        </ul>
-        <button onclick={ updateList }>updateApps</button>
-        
-        flux.bind.call(this, 'items', store.apps)
-        flux.bind.call(this, 'static', store.static);
-        updateList(e) {
-            flux.update(store.apps)
-        }
-    <tab-a>
+    });
     
+### 在组件中调用
+核心方法：
 
+    flux.connect.call(this, chatContent, 'data');  //将组件内的变量引用指向store
+    
+更新数据：    
+
+    flux.update(chatContent); //等效于chatContent.get(),重新更新数据
+    

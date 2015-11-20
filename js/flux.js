@@ -1,64 +1,63 @@
-var flux = {
-    rc : riot.observable(),
+(function(global) {
+    var flux = {};
+    var utils =  {
+        extend: function(src, obj) {
+            for (var key in obj) {
+                if (!src[key]) {
+                    src[key] = obj[key];
+                }
+            }
+        },
 
-    bind : function(v, store, params) {
+        isType: function (type) {
+            return function (obj) {
+                return toString.call(obj) === '[object ' + type + ']';
+            }
+        }
+    };
+
+    utils.extend(utils, {
+        isArray: utils.isType('Array'),
+        isObject: utils.isType('Object'),
+        isFunction: utils.isType('Function'),
+        isElement: function (obj) {
+            return toString.call(obj).indexOf('Element') !== -1;
+        }
+    });
+
+    flux.createStore = function(obj) {
+        if (utils.isObject(obj)) {
+            return riot.observable(obj);
+        }
+        else {
+            throw('createStore参数格式错误');
+        }
+    };
+
+    flux.bind = flux.connect = function(store, property) {
         var self = this;
-        self.on('mount', function() {
-            if (store.type === 'ajax') { 
-                if (!store.getted) {
-                    flux.update(store, params);
-                }
-                else if (store.getted && store.data){
-                    self[v] = store.data;
-                    self.update();
-                }
-
-                flux.rc.on(store.name + '-updated', function() {
-                    self[v] = store.data;
-                    self.update();
-                })
+        if (store.data && store.status === 'complete') {
+            self[property] = store.data;
+        }
+        else {
+            if (store.status !== 'getting') {
+                flux.update(store);
             }
-            else {
-                self[v] = store.data;
-                flux.rc.on(store.name + '-updated', function() {
-                    self[v] = store.data;
-                    self.update();
-                })
-            }
-        });
-
-        self.on('unmount', function() {
-            flux.rc.off(store.name + '-updated');
-        });
-    },
-
-    update : function(store, params) {
-        store.getted = true;
-        if (store.type === 'ajax') {
-            utils.httpGet(store.url, params, function(data) {
-                if (!store.col) {
-                    store.data = data;
-                }
-                else {
-                    var colArr = store.col.split('.');
-                    for (i = 0; i < colArr.length; i++) {
-                        (function() {
-                            if (i === 0) {
-                                store.data = data[colArr[i]];
-                            }
-                            else {
-                                store.data = store.data[colArr[i]];
-                            }
-                        })();
-                    }
-                }
-                flux.rc.trigger(store.name + '-updated')
+            store.on('complete', function () {
+                store.status = 'complete';
+                self[property] = store.data;
+                self.update();
             });
         }
-        else if (store.type === 'json' && params) {
-            store.data = params;
-            flux.rc.trigger(store.name + '-updated')
-        }
-    }
+    };
 
-}
+    flux.update = function(store) {
+        if (store.get && utils.isFunction(store.get)) {
+            store.status = 'getting'
+            store.get();
+        }
+    };
+
+    global.flux = flux;
+})(window);
+

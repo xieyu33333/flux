@@ -2,7 +2,8 @@
     <ul>
         <li each="{ items }">{ name }</li>
     </ul>
-    
-    var store = fluxStore.Apps;
-    flux.bind.call(this, 'items', store.applist);
+    <script>
+    //var store = fluxStore.Apps;
+    flux.bind.call(this, store.chatContent, 'items');
+    </script>
 </applist-2>
