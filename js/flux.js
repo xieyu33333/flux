@@ -1,4 +1,4 @@
-(function(global) {
+(function(global, riot) {
     var flux = {};
     var utils =  {
         extend: function(src, obj) {
@@ -34,30 +34,41 @@
         }
     };
 
-    flux.bind = flux.connect = function(store, property) {
+    flux.bind = flux.connect = function(store, property, params) {
         var self = this;
+        var onComplete= function() {
+            store.status = 'complete';
+            self[property] = store.data;
+            self.update();
+        }
         if (store.data && store.status === 'complete') {
             self[property] = store.data;
+            self.update();
         }
         else {
             if (store.status !== 'getting') {
-                flux.update(store);
+                flux.update(store, params);
             }
-            store.on('complete', function () {
-                store.status = 'complete';
-                self[property] = store.data;
-                self.update();
-            });
         }
+        store.on('complete', onComplete);
     };
 
-    flux.update = function(store) {
+    flux.update = function(store, params) {
         if (store.get && utils.isFunction(store.get)) {
             store.status = 'getting'
-            store.get();
+            store.get(params);
         }
     };
 
-    global.flux = flux;
-})(window);
+    if (typeof require === 'function' && typeof module === 'object' && module && typeof exports === 'object' && exports) {
+        module.exports = flux;
+    }
+    else if (typeof define === 'function' && define.amd) {
+        define(function() { return (global.flux = flux) });
+    }
+    else {
+        global.flux = flux;
+    }
+
+})(window, window.riot);
 

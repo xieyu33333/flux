@@ -8,7 +8,7 @@
     </ul>
     <script>
     //var store = fluxStore.Apps;
-    flux.bind.call(this, store.chatContent, 'items');
+    flux.bind.call(this, store.chatContent, 'items', {id: 1});
 
     //flux.bind.call(this, 'static', store.static);
     </script>

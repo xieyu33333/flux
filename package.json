@@ -8,7 +8,7 @@
     "gulp": "x",
     "gulp-concat": "x",
     "gulp-connect": "^2.2.0",
-    "gulp-riot": "x"
+    "gulp-riot": "0.3.0"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
