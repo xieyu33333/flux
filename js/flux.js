@@ -1,4 +1,7 @@
 (function(global, riot) {
+    if (!riot) {
+        throw ('the plugin depends on Riot');
+    }
     var flux = {};
     var utils =  {
         extend: function(src, obj) {
@@ -36,13 +39,22 @@
 
     flux.bind = flux.connect = function(store, property, params) {
         var self = this;
-        var onComplete= function() {
+        var judgeBinded = function() {
+            if (!store.judge || store.judge.indexOf(self) === -1 ) {
+                self.trigger('flux-binded', property);
+                store.judge = [];
+                store.judge.push(self);
+            }
+        }
+        var onComplete = function() {
             store.status = 'complete';
             self[property] = store.data;
+            judgeBinded();
             self.update();
         }
         if (store.data && store.status === 'complete') {
             self[property] = store.data;
+            judgeBinded()
             self.update();
         }
         else {
